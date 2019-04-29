@@ -26,17 +26,14 @@ while not done:
             print("")
             done = True
 
-        if event.type == pygame.KEYDOWN and False:    # Disabled
+        if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_RETURN:
                 dots_on = not dots_on
-                if dots_on and dots_on != prev_dots_on:
-                    cnt += 1
 
     screen.fill((0, 128, 255))
 
-    dots_on = True
     cnt += 1
-    if cnt >= 300:
+    if cnt >= 240:
         cnt = 0
 
     if dots_on:
