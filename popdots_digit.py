@@ -11,7 +11,7 @@ pygame.display.set_caption("Pop Dots")
 screen = pygame.display.set_mode((screen_w, screen_h))
 clock = pygame.time.Clock()
 digit0 = PyDots.Digit(screen, (35, 72), 330, 2)
-# digit0.set_color_on(dots_digit.Digit.BLUE)
+digit0.set_color_on(PyDots.Colors.GREEN)
 
 done = False
 dots_on = True
