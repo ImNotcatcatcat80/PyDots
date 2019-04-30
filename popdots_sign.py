@@ -10,7 +10,7 @@ pygame.display.set_caption("Pop Dots Sign")
 screen = pygame.display.set_mode((screen_w, screen_h))
 clock = pygame.time.Clock()
 sign0 = PyDots.Sign(screen, (60, 60), 180, 2)
-# sign0.set_color_on(dots_digit.Digit.BLUE)
+sign0.set_color_on(PyDots.Colors.RED)
 
 done = False
 dots_on = True
