@@ -10,5 +10,4 @@
     - Sign (3 * 3)
     - Point
     
-    PyDots_counter.png
-
+  https://github.com/ImNotcatcatcat80/PyDots/blob/master/PyDots_counter.png
