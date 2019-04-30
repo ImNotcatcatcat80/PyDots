@@ -10,5 +10,5 @@
     - Sign (3 * 3)
     - Point
     
-    ![PyDots](PyDots_counter.png)
+    !PyDots_counter.png
 
