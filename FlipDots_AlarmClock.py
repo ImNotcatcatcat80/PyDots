@@ -1,5 +1,6 @@
 
 import traceback
+import sys
 import pygame
 import PyDots
 import datetime
@@ -20,6 +21,10 @@ disp_tr = (l_margin + 6*w_dig + 3*sep_dig + 2*w_sig, y_dig)
 disp_bl = (l_margin, y_dig + h_dig)
 disp_br = (l_margin + 6*w_dig + 3*sep_dig + 2*w_sig, y_dig + h_dig)
 list_colors = [PyDots.Colors.YELLOW, PyDots.Colors.GREEN, PyDots.Colors.RED, PyDots.Colors.WHITE]
+permissible_fonts_small = ["arial", "calibri", "verdana", "lucidaconsole", "tahoma", "dejavusans"]
+permissible_fonts_large = ["arialblack", "calibri", "verdana", "lucidaconsole", "tahoma", "dejavusans"]
+font_small = None
+font_large = None
 colors_index = 0
 done = False
 display_on = True
@@ -33,13 +38,29 @@ time = "init"
 dt_set_datemode = datetime.datetime.now()
 
 pygame.init()
-pygame.display.set_caption("Alarm Clock")
+pygame.display.set_caption("FD Clock")
 screen = pygame.display.set_mode((screen_w, screen_h))
 clock = pygame.time.Clock()
-# font_arial = pygame.font.SysFont("arial", 48)
-# font_roboto = pygame.font.Font("fonts/Roboto-Black.ttf", 48)
-# text_clock_name = font_arial.render("FD Alarm Clock", True, (0, 0, 0))
-
+# font_large = pygame.font.SysFont("arial black", 36)
+# font_small = pygame.font.SysFont("arial", 12)
+# font_roboto_black = pygame.font.Font("fonts/Roboto-Black.ttf", 40)
+# font_roboto_regular = pygame.font.Font("fonts/Roboto-Regular.ttf", 14)
+for fs in permissible_fonts_small:
+    if fs in pygame.font.get_fonts():
+        font_small = pygame.font.SysFont(fs, 12)
+        break
+if font_small is None:
+    font_small = pygame.font.Font(None, 12)
+for fl in permissible_fonts_large:
+    if fl in pygame.font.get_fonts():
+        font_large = pygame.font.SysFont(fl, 36)
+        break
+if font_large is None:
+    font_large = pygame.font.Font(None, 32)
+# font_large.set_bold(True)
+text_clock_name = font_large.render("FD CLOCK", True, (0, 0, 0))
+text_clock_description = font_small.render("software operated flip dot calendar clock - using system time as time source - v0.2", True, (0, 0, 0))
+text_system_version = font_small.render("Running on Python " + sys.version, True, (0, 0, 0))
 digit_h1 = PyDots.Digit(screen, (l_margin, y_dig), w_dig, 2)
 digit_h0 = PyDots.Digit(screen, (l_margin + 1*w_dig + 1*sep_dig, y_dig), w_dig, 2)
 sign_hm = PyDots.Sign(screen, (l_margin + 2*w_dig + 1*sep_dig, y_sig), w_sig, 2)
@@ -50,6 +71,16 @@ digit_s1 = PyDots.Digit(screen, (l_margin + 4*w_dig + 2*sep_dig + 2*w_sig, y_dig
 digit_s0 = PyDots.Digit(screen, (l_margin + 5*w_dig + 3*sep_dig + 2*w_sig, y_dig), w_dig, 2)
 point_h = PyDots.Point(screen, (l_margin + 2*w_dig + 2*sep_dig, y_dig + h_dig - h_point), w_point, 2)
 point_m = PyDots.Point(screen, (l_margin + 4*w_dig + 3*sep_dig + 1*w_sig, y_dig + h_dig - h_point), w_point, 2)
+
+
+def round_corn_rect(p_tl, p_tr, p_bl, p_br, p_rad, p_color):
+    pygame.draw.rect(screen, p_color, pygame.Rect(p_tl[0] - p_rad, p_tl[1], p_tr[0] - p_tl[0] + 2 * p_rad, p_bl[1] - p_tl[1]))
+    pygame.draw.rect(screen, p_color, pygame.Rect(p_tl[0], p_tl[1] - p_rad, p_tr[0] - p_tl[0], p_bl[1] - p_tl[1] + 2 * p_rad))
+    pygame.draw.circle(screen, p_color, p_tl, p_rad)
+    pygame.draw.circle(screen, p_color, p_tr, p_rad)
+    pygame.draw.circle(screen, p_color, p_bl, p_rad)
+    pygame.draw.circle(screen, p_color, p_br, p_rad)
+
 
 while not done:
 
@@ -67,8 +98,6 @@ while not done:
             print("")
             done = True
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_RETURN:
-                display_on = not display_on
             if event.key == pygame.K_SPACE:
                 show_date = not show_date
                 if show_date:
@@ -107,16 +136,30 @@ while not done:
     point_h.set_color_on(list_colors[colors_index])
     point_m.set_color_on(list_colors[colors_index])
 
+    # Light blue background
     screen.fill(PyDots.Colors.BLUE)
-    # text_w = text_clock_name.get_width()
-    # text_h = text_clock_name.get_height()
-    # screen.blit(text_clock_name, (screen_w / 2 - text_w / 2, disp_tl[1] - int(w_dig/8) - text_h))
-    pygame.draw.rect(screen, PyDots.Colors.BG_BLACK, pygame.Rect((disp_tl[0] - int(w_dig / 8)), disp_tl[1], (disp_tr[0] - disp_tl[0] + int(w_dig / 4)), h_dig))
-    pygame.draw.rect(screen, PyDots.Colors.BG_BLACK, pygame.Rect(disp_tl[0], disp_tl[1] - int(w_dig/8), disp_tr[0] - disp_tl[0], (disp_bl[1] - disp_tl[1] + int(w_dig / 4))))
-    pygame.draw.circle(screen, PyDots.Colors.BG_BLACK, disp_tl, int(w_dig / 8))
-    pygame.draw.circle(screen, PyDots.Colors.BG_BLACK, disp_tr, int(w_dig / 8))
-    pygame.draw.circle(screen, PyDots.Colors.BG_BLACK disp_bl, int(w_dig / 8))
-    pygame.draw.circle(screen, PyDots.Colors.BG_BLACK, disp_br, int(w_dig / 8))
+    # White area
+    white_tl = (disp_tl[0] - int(w_dig/16), disp_tl[1] - int(h_sig))
+    white_tr = (disp_tr[0] + int(w_dig/16), disp_tr[1] - int(h_sig))
+    white_bl = (disp_bl[0] - int(w_dig/16), disp_bl[1] + int(h_sig/2))
+    white_br = (disp_br[0] + int(w_dig/16), disp_br[1] + int(h_sig/2))
+    white_area = PyDots.RoundCornerRect(white_tl, white_tr, white_bl, white_br, int(w_dig / 8))
+    white_area.draw_rect(screen, PyDots.Colors.WHITE)
+    white_area_top_y = white_area.get_y_min()
+    # Black area around display
+    black_area = PyDots.RoundCornerRect(disp_tl, disp_tr, disp_bl, disp_br, int(w_dig / 8))
+    black_area.draw_rect(screen, PyDots.Colors.BG_BLACK)
+    black_area_top_y = black_area.get_y_min()
+    black_area_bottom_y = black_area.get_y_max()
+    # Text
+    name_w = text_clock_name.get_width()
+    name_h = text_clock_name.get_height()
+    description_w = text_clock_description.get_width()
+    description_h = text_clock_description.get_height()
+    description_y = black_area_bottom_y + int(sep_dig / 4)
+    screen.blit(text_clock_description, (screen_w / 2 - description_w / 2, description_y))
+    screen.blit(text_clock_name, (screen_w / 2 - name_w / 2, (black_area_top_y + white_area_top_y)/2 - (name_h / 2)))
+    screen.blit(text_system_version, (screen_w / 2 - text_system_version.get_width() / 2, description_y + description_h))
 
     if display_on:
         if show_date:
@@ -147,16 +190,16 @@ while not done:
         point_h.draw("n")
         point_m.draw("n")
     else:
-        digit_h1.draw("n")
-        digit_h0.draw("n")
-        sign_hm.draw("n")
-        digit_m1.draw("n")
-        digit_m0.draw("n")
-        sign_ms.draw("n")
-        digit_s1.draw("n")
-        digit_s0.draw("n")
-        point_h.draw("n")
-        point_m.draw("n")
+        digit_h1.draw("f")
+        digit_h0.draw("f")
+        sign_hm.draw("f")
+        digit_m1.draw("f")
+        digit_m0.draw("f")
+        sign_ms.draw("f")
+        digit_s1.draw("f")
+        digit_s0.draw("f")
+        point_h.draw(".")
+        point_m.draw(".")
 
     prev_time_str = time_str
     clock.tick_busy_loop(10)
