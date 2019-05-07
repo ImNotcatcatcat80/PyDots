@@ -20,6 +20,8 @@
     - Digit (4 * 7)
     - Sign (3 * 3)
     - Point
+    - Rounded-corners rectangle
+        to host the elements above
 
 """
 
@@ -34,7 +36,7 @@ class Digit:
         self.height = int(self.width*7/4)
         self.screen = p_screen
         if not isinstance(p_topleft, tuple):
-            raise InvalidTopLeftType
+            raise InvalidCornerType
         self.topleft = p_topleft
         self.prev_char = None
         if not 0 < p_frames_transition <= 10:
@@ -290,7 +292,7 @@ class Sign:
         self.height = self.width
         self.screen = p_screen
         if not isinstance(p_topleft, tuple):
-            raise InvalidTopLeftType
+            raise InvalidCornerType
         self.topleft = p_topleft
         self.prev_char = None
         if not 0 < p_frames_transition <= 10:
@@ -316,6 +318,8 @@ class Sign:
         ]
         if f_char == "x":
             selected_char_list = Sign.char_cross
+        if f_char == "f":
+            selected_char_list = Sign.char_full
         elif f_char == ":":
             selected_char_list = Sign.char_dots
         elif f_char == "+":
@@ -389,6 +393,12 @@ class Sign:
         [1, 0, 1],
         [0, 1, 0],
         [1, 0, 1]
+    ]
+
+    char_full = [
+        [1, 1, 1],
+        [1, 1, 1],
+        [1, 1, 1]
     ]
 
     char_dots = [
@@ -465,7 +475,7 @@ class Point:
         self.height = self.width
         self.screen = p_screen
         if not isinstance(p_topleft, tuple):
-            raise InvalidTopLeftType
+            raise InvalidCornerType
         self.topleft = p_topleft
         self.prev_char = None
         if not 0 < p_frames_transition <= 10:
@@ -565,13 +575,52 @@ class Colors:
     RED = (255, 0, 0)
 
 
-class InvalidTopLeftType(Exception):
-    """Parameter p_topleft is not a Tuple"""
+class RoundCornerRect:
+
+    def __init__(self, tl, tr, bl, br, rad):
+        if not isinstance(tl, tuple) or not isinstance(tr, tuple) or not isinstance(bl, tuple) or not isinstance(br, tuple):
+            raise InvalidCornerType
+        self.p_tl = tl
+        self.p_tr = tr
+        self.p_bl = bl
+        self.p_br = br
+        self.p_rad = rad
+        if tl[0] != bl[0] or tr[0] != br[0]:
+            raise CornerXCoordinatesInconsistent
+        if tl[1] != tr[1] or bl[1] != br[1]:
+            raise CornerYCoordinatesInconsistent
+
+    def draw_rect(self, p_screen, p_color):
+        pygame.draw.rect(p_screen, p_color,
+                         pygame.Rect(self.p_tl[0] - self.p_rad, self.p_tl[1], self.p_tr[0] - self.p_tl[0] + 2 * self.p_rad, self.p_bl[1] - self.p_tl[1]))
+        pygame.draw.rect(p_screen, p_color,
+                         pygame.Rect(self.p_tl[0], self.p_tl[1] - self.p_rad, self.p_tr[0] - self.p_tl[0], self.p_bl[1] - self.p_tl[1] + 2 * self.p_rad))
+        pygame.draw.circle(p_screen, p_color, self.p_tl, self.p_rad)
+        pygame.draw.circle(p_screen, p_color, self.p_tr, self.p_rad)
+        pygame.draw.circle(p_screen, p_color, self.p_bl, self.p_rad)
+        pygame.draw.circle(p_screen, p_color, self.p_br, self.p_rad)
+
+    def get_y_min(self):
+        return self.p_tl[1] - self.p_rad
+
+    def get_y_max(self):
+        return self.p_bl[1] + self.p_rad
+
+    def get_x_min(self):
+        return self.p_tl[0] - self.p_rad
+
+    def get_x_max(self):
+        return self.p_tr[0] - self.p_rad
+
+
+class InvalidCornerType(Exception):
+    """Parameter for a corner is not a tuple"""
     pass
 
 
 class FramesPerTransitionOutOfRange(Exception):
     """Parameter p_frames_transition less than 1 or larger than 10"""
+    pass
 
 
 class DrawCharTooLong(Exception):
@@ -581,4 +630,15 @@ class DrawCharTooLong(Exception):
 
 class InvalidColorSet(Exception):
     """Parameter p_col not in the permissible color list [Digit.YELLOW, Digit.WHITE, Digit.GREEN, Digit.BLUE, Digit.RED]"""
+    pass
+
+
+class CornerXCoordinatesInconsistent(Exception):
+    """X coordinates of the same edge are not aligned"""
+    pass
+
+
+class CornerYCoordinatesInconsistent(Exception):
+    """Y coordinates of the same edge are not aligned"""
+    pass
 
