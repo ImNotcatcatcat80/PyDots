@@ -10,6 +10,12 @@
     - Sign (3 * 3)
     - Point
     
-  https://github.com/ImNotcatcatcat80/PyDots/blob/master/PyDots_FD_Clock.png
+  <div align="center">
+  <img src="https://github.com/ImNotcatcatcat80/PyDots/blob/master/PyDots_FD_Clock.png"><br><br>
+  </div>
+
+  <div align="center">
+  <img src="https://github.com/ImNotcatcatcat80/PyDots/blob/master/PyDots_counter.png"><br><br>
+  </div>
   
-  https://github.com/ImNotcatcatcat80/PyDots/blob/master/PyDots_counter.png
+  
